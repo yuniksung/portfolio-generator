@@ -1,3 +1,6 @@
+
+const fs = require('fs');
+const generatePage = require('./src/page-template.js');
 const inquirer= require('inquirer');
 
 const promptUser = () => {
@@ -116,26 +119,26 @@ const promptUser = () => {
         message: 'Would you like to enter another project?',
         default: false
       }
-    ]).then(projectData => {
-        portfolioData.projects.push(projectData);
-        if (projectData.confirmAddProject) {
-            return promptProject(portfolioData);
-        } else {
-            return portfolioData;
-        }
-      });
+    ])
+    .then(projectData => {
+      portfolioData.projects.push(projectData);
+      if (projectData.confirmAddProject) {
+          return promptProject(portfolioData);
+      } else {
+          return portfolioData;
+      }
+    });
   };
 
   promptUser()
   .then(promptProject)
   .then(portfolioData => {
-    console.log(portfolioData);
-  });
+    const pageHTML = generatePage(portfolioData);
 
-/*const fs = require('fs');
-const generatePage = require('./src/page-template.js');
-const pageHTML= generatePage(name, github);
-fs.writeFile('./index.html', generatePage(name, github), err => {
-  if (err) throw new Error(err);
-  console.log('Portfolio complete! Check out index.html to see the output!');
-});*/
+    fs.writeFile('./index.html', pageHTML, err => {
+      if (err) throw new Error(err);
+
+      console.log('Page created! Check out index.html in this directory to see it!');
+    });
+  });
+ 
